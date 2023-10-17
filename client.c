@@ -769,7 +769,7 @@ void view_courses (int sockfd, int option) {
 
     recv (sockfd, &result, sizeof(result), 0);
     if (result == true) {
-        printf ("Succefully fetched all courses\n");
+        printf ("Successfully fetched all courses\n");
     }
     else {
         printf ("No Course Found\n");
@@ -790,11 +790,11 @@ void add_course(int sockfd, int option) {
     printf ("Enter Course Name: ");
     scanf("%[^\n]", record.name);
 
-    getchar();
-    printf ("Enter Your Faculty Id: ");
-    int f_id;
-    scanf("%d", &f_id);
-    record.faculty_id = f_id;
+    // getchar();
+    // printf ("Enter Your Faculty Id: ");
+    // int f_id;
+    // scanf("%d", &f_id);
+    // record.faculty_id = f_id;
 
     getchar();
     printf ("Enter Department: ");
@@ -1102,20 +1102,20 @@ void view_enrolled_courses(int sockfd, int option) {
     int count, cnt;
     recv (sockfd, &count, sizeof(count), 0);
 
-    printf ("Enrolled In: %d courses\n", count);
+    printf ("\nEnrolled In: %d courses\n", count);
 
     for (int i = 0; i < count; i++) {
         // revc (sockfd, &cnt, sizeof(cnt), 0);
-        recv (sockfd, &enroll, sizeof(struct enrollment), 0);
-        printf("\nCourse ID: %d", enroll.courseid);
-        printf("\nStudent ID: %d", enroll.studentid);
-        // recv (sockfd, &courseRecord, sizeof(struct course), 0);
-        // printf("\nCourse ID: %d", courseRecord.id);
-        // printf("\nCourse Name: %s", courseRecord.name);
-        // printf ("\nFaculty Id: %d", courseRecord.faculty_id);
-        // printf ("\nDepartment: %s", courseRecord.department);
-        // printf("\nAvailable Seats: %d", courseRecord.no_of_available_seats);
-        // printf("\nCourse Credit: %d\n", courseRecord.credits);
+        // recv (sockfd, &enroll, sizeof(struct enrollment), 0);
+        // printf("\nCourse ID: %d", enroll.courseid);
+        // printf("\nStudent ID: %d", enroll.studentid);
+        recv (sockfd, &courseRecord, sizeof(struct course), 0);
+        printf("\nCourse ID: %d", courseRecord.id);
+        printf("\nCourse Name: %s", courseRecord.name);
+        printf ("\nFaculty Id: %d", courseRecord.faculty_id);
+        printf ("\nDepartment: %s", courseRecord.department);
+        printf("\nAvailable Seats: %d", courseRecord.no_of_available_seats);
+        printf("\nCourse Credit: %d\n\n", courseRecord.credits);
 
     }
 

@@ -86,7 +86,7 @@ int main()
 		return 1;
 	}
 	printf("listening...\n");
-	printf("Welcome to IIITB Academia Portal\n\n");
+	printf("Welcome to Course Registration Portal\n\n");
 	printf("Waiting for client to connect...\n");
 
 	while (1)
@@ -299,6 +299,7 @@ int servercall(int clifd)
 				printf("Entering in view enrolled courses\n");
 				printf("student option: %d\n", option);
 				struct enrollment record17;
+				recv(clifd, &record17, sizeof(struct enrollment), 0);
 				result = viewEnrolledCourses(clifd, record17);
 				send(clifd, &result, sizeof(result), 0);
 				break;
@@ -1005,6 +1006,7 @@ bool addCourse(int clifd, struct course record)
 
 	// record.status = 1;
 	strcpy(record.status, "ACTIVE");
+	record.faculty_id = uid;
 	record.no_of_available_seats = record.no_of_seats;
 
 	// generate login_id -> MT{id}
@@ -1603,7 +1605,7 @@ bool enrollCourse(int clifd, struct enrollment record)
 		int msg;
 		while ((fd_read = read(fd, &curr_record, sizeof(struct enrollment))) > 0)
 		{
-			if (curr_record.studentid == uid && curr_record.courseid == record.courseid && strcmp(curr_record.status, "ACTIVE") == 0)
+			if (curr_record.studentid == uid && curr_record.courseid == record.courseid && strcmp(curr_record.status, "ENROLLED") == 0)
 			{
 				msg = 0;
 				send(clifd, &msg, sizeof(msg), 0);
@@ -1612,7 +1614,7 @@ bool enrollCourse(int clifd, struct enrollment record)
 		}
 
 		record.studentid = uid;
-		strcpy(record.status, "ACTIVE");
+		strcpy(record.status, "ENROLLED");
 		ssize_t fd_write = write(fd, &record, sizeof(struct enrollment));
 		if (fd_write == -1)
 		{
@@ -1750,7 +1752,7 @@ bool dropCourse(int clifd, struct enrollment record)
 {
 	printf("Entered in drop course\n");
 	struct enrollment curr_record;
-	bool result;
+	bool result = true;
 	ssize_t fd_read;
 
 	int fd = open(ENROLL_DB, O_RDWR, 0777);
@@ -1777,7 +1779,11 @@ bool dropCourse(int clifd, struct enrollment record)
 	int msg;
 	while ((fd_read = read(fd, &curr_record, sizeof(struct enrollment))) > 0)
 	{
-		if (curr_record.courseid == record.courseid && curr_record.studentid == uid && strcmp(curr_record.status,"ACTIVE"))
+		printf ("INSIDE WHILE LOOP\n");
+		printf ("COURSE ID: %d\n", curr_record.courseid);
+		printf ("STUDENT ID: %d\n", curr_record.studentid);
+		printf ("STATUS: %s\n", curr_record.status);
+		if (curr_record.courseid == record.courseid && curr_record.studentid == uid && strcmp(curr_record.status,"ENROLLED") == 0)
 		{
 
 			strcpy(curr_record.status, "DROPPED");
@@ -1789,11 +1795,8 @@ bool dropCourse(int clifd, struct enrollment record)
 				perror("Error in writing in enroll_db");
 				result = false;
 			}
-			else
-			{
-				msg = 1;
-				result = true;
-			}
+			result = true;
+			msg = 1;
 			increaseSeats(record.courseid);
 			break;
 		}
@@ -1812,6 +1815,9 @@ bool dropCourse(int clifd, struct enrollment record)
 		perror("Error in unlocking");
 		exit(EXIT_FAILURE);
 	}
+
+	printf ("\nMSG: %d\n",msg);
+	printf ("Result: %d\n", result);
 
 	return result;
 }
@@ -1880,12 +1886,13 @@ void increaseSeats(int cid)
 
 bool viewEnrolledCourses(int clifd, struct enrollment record)
 {
+	printf ("\nEntered in VIew enrolled course\n");
 	struct enrollment curr_record;
 	int count = 0;
 	bool result;
 	ssize_t fd_read;
 
-	int fd = open(ENROLL_DB, O_RDONLY, 0777);
+	int fd = open(ENROLL_DB, O_RDONLY | O_CREAT, 0777);
 	if (fd == -1)
 	{
 		perror("Error in opening enroll_db");
@@ -1916,19 +1923,19 @@ bool viewEnrolledCourses(int clifd, struct enrollment record)
 			count++;
 		}
 	}
-
+	printf ("count: %d\n", count);
 	send(clifd, &count, sizeof(count), 0);
 
 	lseek(fd, 0, SEEK_SET);
-	int c;
+	int c = 0;
 	while ((fd_read = read(fd, &curr_record, sizeof(struct enrollment))) > 0)
 	{
 		if (curr_record.studentid == uid && strcmp(curr_record.status, "ENROLLED") == 0)
 		{
-			send(clifd, &curr_record, sizeof(struct enrollment), 0);
-			// struct course courseRecord;
-			// courseRecord.id = curr_record.courseid;
-			// coursesDetails (clifd, courseRecord);
+			// send(clifd, &curr_record, sizeof(struct enrollment), 0);
+			struct course courseRecord;
+			courseRecord.id = curr_record.courseid;
+			coursesDetails (clifd, courseRecord);
 			c++;
 		}
 	}
@@ -1941,6 +1948,10 @@ bool viewEnrolledCourses(int clifd, struct enrollment record)
 	{
 		result = false;
 	}
+
+	printf ("Result: %d\n", result);
+	printf ("c: %d\n", c);
+	printf ("count: %d\n", count);
 
 	lock.l_type = F_UNLCK;
 	status = fcntl(fd, F_SETLK, &lock);
@@ -1967,6 +1978,7 @@ void coursesDetails(int clifd, struct course courseRecord)
 
 	int cid;
 	cid = courseRecord.id;
+	printf ("\n COURSE ID: %d\n", cid);
 
 	struct flock lock;
 	lock.l_type = F_RDLCK;
@@ -1992,6 +2004,12 @@ void coursesDetails(int clifd, struct course courseRecord)
 
 	if (curr_record.id == cid)
 	{
+		printf("\nCourse ID: %d", courseRecord.id);
+        printf("\nCourse Name: %s", courseRecord.name);
+        printf ("\nFaculty Id: %d", courseRecord.faculty_id);
+        printf ("\nDepartment: %s", courseRecord.department);
+        printf("\nAvailable Seats: %d", courseRecord.no_of_available_seats);
+        printf("\nCourse Credit: %d\n\n", courseRecord.credits);
 		send(clifd, &curr_record, sizeof(struct course), 0);
 	}
 
