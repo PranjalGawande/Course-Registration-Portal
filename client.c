@@ -9,16 +9,12 @@
 #include <fcntl.h>
 #include <stdbool.h>
 
-// #include "./functions/login.h"
 #include "./structures/admin.h"
 #include "./structures/faculty.h"
 #include "./structures/student.h"
 #include "./structures/course.h"
 #include "./structures/enrollment.h"
-// #include "./functions/showmenu.h"
-// #include "./functions/admin_functions.h"
 
-// int clientcall(int);
 int welcome_menu(int);
 int show_menu(int);
 
@@ -45,15 +41,13 @@ void remove_course(int, int);
 void update_course(int, int);
 void faculty_change_pass(int, int);
 
-// void viewAvailableCourse(int, int);
 void view_all_courses(int, int);
-void student_change_pass(int, int);
 void enroll_course (int, int);
 void drop_course(int, int);
 void view_enrolled_courses(int, int);
+void student_change_pass(int, int);
 
 #define DEFAULT_PASS "abc123"
-// #define STUDENT_DB "/home/pranjal-gawande/Software System/Course Registration portal/database/student_db"
 
 int choice;
 
@@ -185,7 +179,7 @@ void admin_login(int sockfd)
 {
     struct admin curr_user;
     bool res;
-    // int choice = 1;
+    
     printf("Login id: ");
     scanf("%s", curr_user.login_id);
 
@@ -374,20 +368,18 @@ void student_functions(int sockfd, int option) {
 // ********* ADMIN FUNCTOINS ***********
 // *************************************
 
+
 // 1. Adding new student
 void add_student(int sockfd, int option)
 {
-    // printf("add func entered\n");
     struct student new_student;
     bool result;
 
-    // printf("sended option\n");
     send(sockfd, &option, sizeof(option), 0);
     getchar();
 
     // Taking inputs for new student
     printf("Enter name: ");
-    // fgets(new_student.name, sizeof(new_student.name), stdin);
     scanf("%[^\n]", new_student.name);
 
     printf("Enter age: ");
@@ -395,26 +387,22 @@ void add_student(int sockfd, int option)
     getchar();
 
     printf("Enter address: ");
-    // fgets(new_student.address, sizeof(new_student.address), stdin);
     scanf("%[^\n]", new_student.address);
     getchar();
 
     printf("Enter email: ");
-    // fgets(new_student.email, sizeof(new_student.email), stdin);
     scanf("%[^\n]", new_student.email);
 
     strcpy(new_student.login_id, "");
 
     strcpy(new_student.password, DEFAULT_PASS);
 
-    // printf("sended new_student record\n");
     send(sockfd, &new_student, sizeof(struct student), 0);
 
     int id;
     recv(sockfd, &id, sizeof(id), 0);
-    // printf("received id\n");
+
     recv(sockfd, &result, sizeof(result), 0);
-    // printf("received new_student record\n");
 
     if (result == true)
     {
@@ -426,12 +414,12 @@ void add_student(int sockfd, int option)
     {
         printf("Error during adding student record\n");
     }
-    // printf("add student completed\n");
     show_menu(sockfd);
     return;
 }
 
-// 2. view student details
+
+// 2. View student details
 void view_student_details(int sockfd, int option)
 {
     struct student record;
@@ -468,55 +456,46 @@ void view_student_details(int sockfd, int option)
     return;
 }
 
-// 3. add new faculty
+
+// 3. Add new faculty
 void add_faculty(int sockfd, int option)
 {
-    // printf("add func entered\n");
     struct faculty new_faculty;
     bool result;
 
-    // printf("sended option\n");
     send(sockfd, &option, sizeof(option), 0);
     getchar();
 
-    // Taking inputs for new faculty
     printf("Enter name: ");
     scanf("%[^\n]", new_faculty.name);
     getchar();
-    // fgets(new_faculty.name, sizeof(new_faculty.name), stdin);
 
     printf("Enter department: ");
     scanf("%[^\n]", new_faculty.department);
     getchar();
-    // fgets(new_faculty.department, sizeof(new_faculty.department), stdin);
 
     printf("Enter designation: ");
     scanf("%[^\n]", new_faculty.designation);
     getchar();
-    // fgets(new_faculty.designation, sizeof(new_faculty.designation), stdin);
 
     printf("Enter address: ");
     scanf("%[^\n]", new_faculty.address);
     getchar();
-    // fgets(new_faculty.address, sizeof(new_faculty.address), stdin);
 
     printf("Enter email: ");
     scanf("%[^\n]", new_faculty.email);
     getchar();
-    // fgets(new_faculty.email, sizeof(new_faculty.email), stdin);
 
     strcpy(new_faculty.login_id, "");
 
     strcpy(new_faculty.password, DEFAULT_PASS);
 
-    // printf("sended new_student record\n");
     send(sockfd, &new_faculty, sizeof(struct faculty), 0);
 
     int id;
     recv(sockfd, &id, sizeof(id), 0);
-    // printf("received id\n");
+
     recv(sockfd, &result, sizeof(result), 0);
-    // printf("received new_student record\n");
 
     if (result == true)
     {
@@ -528,12 +507,13 @@ void add_faculty(int sockfd, int option)
     {
         printf("Error during adding faculty record\n");
     }
-    // printf("add student completed\n");
+
     show_menu(sockfd);
     return;
 }
 
-// 4. view faculty details
+
+// 4. View faculty details
 void view_faculty_details(int sockfd, int option)
 {
     struct faculty record;
@@ -570,7 +550,8 @@ void view_faculty_details(int sockfd, int option)
     return;
 }
 
-// 5. activate student
+
+// 5. Activate student
 void activate_student(int sockfd, int option)
 {
     struct student record;
@@ -609,7 +590,8 @@ void activate_student(int sockfd, int option)
     return;
 }
 
-// 6. block student
+
+// 6. Block student
 void block_student(int sockfd, int option)
 {
     struct student record;
@@ -647,6 +629,7 @@ void block_student(int sockfd, int option)
     show_menu(sockfd);
     return;
 }
+
 
 // 7. Modify student
 void modify_student(int sockfd, int option)
@@ -737,15 +720,13 @@ void modify_faculty(int sockfd, int option)
 // ***************************************
 
 
+// View Offering courses
 void view_courses (int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
 
     struct course record;
     bool result;
     
-    // printf ("Enter your Faculty Id: ");
-    // scanf("%d", &record.faculty_id);
-
     send (sockfd, &record, sizeof(struct course), 0);
 
     int count;
@@ -756,7 +737,6 @@ void view_courses (int sockfd, int option) {
     while (count) {
         recv (sockfd, &record, sizeof(struct course), 0);
         printf ("Course Id: %d\n", record.id);
-        // printf ("Course Code: %s\n", record.course_code);
         printf ("Course Name: %s\n", record.name);
         printf ("Course Department: %s\n", record.department);
         printf ("Total Number of Seats: %d\n", record.no_of_seats);
@@ -780,21 +760,16 @@ void view_courses (int sockfd, int option) {
 
 }
 
+
+// Add course
 void add_course(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
-    // printf ("\noption: %d\n", option);
     struct course record;
     bool result;
 
     getchar();
     printf ("Enter Course Name: ");
     scanf("%[^\n]", record.name);
-
-    // getchar();
-    // printf ("Enter Your Faculty Id: ");
-    // int f_id;
-    // scanf("%d", &f_id);
-    // record.faculty_id = f_id;
 
     getchar();
     printf ("Enter Department: ");
@@ -812,21 +787,9 @@ void add_course(int sockfd, int option) {
     scanf("%d", &cred);
     record.credits = cred;
 
-    // getchar();
-    // printf ("Enter Course Code (First 2 letters): ");
-    // scanf("%[^\n]", record.course_code);
-
-    // strcpy(record.courseid, "");
-    // printf ("course id: %d\n", record.id);
-	// printf ("course faculty id: %d\n", record.faculty_id);
-
     send (sockfd, &record, sizeof(struct course), 0);
 
-    // int id;
-    // recv (sockfd, &id, sizeof(id), 0);
-
     int id;
-    // strcpy(code, record.course_code);
     recv (sockfd, &id, sizeof(id), 0);
 
     recv (sockfd, &result, sizeof(result), 0);
@@ -834,7 +797,6 @@ void add_course(int sockfd, int option) {
     if (result == true) {
         printf ("\nNew Course Added Successfully\n\n");
         printf ("Course Id generated: %d\n\n", id);
-        // printf ("Node: Course code will be {course_code(first 2 letter)}{course_id}\n");
     }
     else {
         printf ("Error in adding course\n");
@@ -846,6 +808,8 @@ void add_course(int sockfd, int option) {
 
 }
 
+
+// Remove course
 void remove_course(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
 
@@ -877,6 +841,8 @@ void remove_course(int sockfd, int option) {
 
 }
 
+
+// Update course
 void update_course(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
 
@@ -890,27 +856,23 @@ void update_course(int sockfd, int option) {
     getchar();
     printf("New Name of the Course: ");
     scanf("%[^\n]", record.name);
+
     getchar();
     printf("New Department: ");
     scanf("%[^\n]", record.department);
+
     getchar();
     printf("New Total Number of Seats: ");
-    // int total_seats;
     scanf("%d", &record.no_of_seats);
-    // record.no_of_seats = total_seats;
+
     getchar();
     printf("New Credit: ");
-    // int cred;
     scanf("%d", &record.credits);
-    // record.credits = cred;
+
     getchar();
-    // printf("New Course Code (First 2 letters): ");
-    // scanf("%[^\n]", record.course_code);
-    // getchar();
 
     send(sockfd, &record, sizeof(struct course), 0);
 
-    // recv(sockfd, &msg, sizeof(msg), 0);
     recv(sockfd, &result, sizeof(result), 0);
 
     if (result == true) {
@@ -927,6 +889,7 @@ void update_course(int sockfd, int option) {
 }
 
 
+// Faculty change password
 void faculty_change_pass(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
 
@@ -959,34 +922,7 @@ void faculty_change_pass(int sockfd, int option) {
 // ***************************************
 
 
-
-// void viewAvailableCourse(int sd, int option)
-// {
-//     // DEBUG("Entering viewAvailableCourse().\n")
-//     int select = 1;
-//     send (sd, &select, sizeof(int), 0);
-
-//     bool result;
-//     recv (sd, &result, sizeof(bool), 0);
-
-//     if (result) {
-//         char course_available[1000];
-//         memset (course_available, '\0', sizeof(course_available));
-
-//         recv (sd, &course_available, sizeof(course_available), 0);
-
-//         write (1, &course_available, sizeof(course_available));
-//     }
-//     else {
-//         printf ("No course are offered yet. Please check after sometime.\n\n");
-//     }
-
-//     show_menu(sd);
-//     // DEBUG("Leaving viewAvailableCourse().\n")
-// }
-
-
-
+// View All courses
 void view_all_courses(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
 
@@ -1002,7 +938,6 @@ void view_all_courses(int sockfd, int option) {
     for (int i = 0; i < count; i++) {
         recv (sockfd, &record, sizeof(struct course), 0);
         printf("\nCourse ID: %d", record.id);
-        // printf("\nCourse Code: %s", record.course_code);
         printf("\nCourse Name: %s", record.name);
         printf ("\nFaculty Id: %d", record.faculty_id);
         printf ("\nDepartment: %s", record.department);
@@ -1022,6 +957,8 @@ void view_all_courses(int sockfd, int option) {
     return;
 }
 
+
+// Enroll course
 void enroll_course (int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
 
@@ -1061,6 +998,7 @@ void enroll_course (int sockfd, int option) {
 }
 
 
+// Drop course
 void drop_course(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
     struct enrollment enroll;
@@ -1090,6 +1028,8 @@ void drop_course(int sockfd, int option) {
     
 }
 
+
+// View Enrolled courses
 void view_enrolled_courses(int sockfd, int option) {
     send (sockfd, &option, sizeof (option), 0);
 
@@ -1105,10 +1045,6 @@ void view_enrolled_courses(int sockfd, int option) {
     printf ("\nEnrolled In: %d courses\n", count);
 
     for (int i = 0; i < count; i++) {
-        // revc (sockfd, &cnt, sizeof(cnt), 0);
-        // recv (sockfd, &enroll, sizeof(struct enrollment), 0);
-        // printf("\nCourse ID: %d", enroll.courseid);
-        // printf("\nStudent ID: %d", enroll.studentid);
         recv (sockfd, &courseRecord, sizeof(struct course), 0);
         printf("\nCourse ID: %d", courseRecord.id);
         printf("\nCourse Name: %s", courseRecord.name);
@@ -1133,6 +1069,7 @@ void view_enrolled_courses(int sockfd, int option) {
 }
 
 
+// Student change password
 void student_change_pass(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
 
@@ -1158,5 +1095,3 @@ void student_change_pass(int sockfd, int option) {
     return;
 
 }
-
-
