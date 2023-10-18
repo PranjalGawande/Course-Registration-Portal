@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "types.h": "c",
+        "fcntl.h": "c",
+        "admin_functions.h": "c",
+        "enrollment.h": "c",
+        "validate.h": "c",
+        "stdio.h": "c",
+        "unistd.h": "c"
+    }
+}
