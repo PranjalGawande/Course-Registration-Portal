@@ -149,7 +149,7 @@ bool validateStudent(struct student curr_user) {
 
     // reading record
     while(read(fd, &temp, sizeof(temp)) > 0) {
-        if (strcmp(temp.login_id, curr_user.login_id) == 0 && strcmp(temp.password, curr_user.password) == 0) {
+        if (strcmp(temp.login_id, curr_user.login_id) == 0 && strcmp(temp.password, curr_user.password) == 0 && strcmp(temp.status, "ACTIVE") == 0) {
             uid = temp.id;
             result = true;
             break;

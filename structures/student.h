@@ -12,7 +12,7 @@ struct student
     // Login Credentials
     char login_id[15]; // Format : MT{id}
     char password[15];
-    char status[15];
+    char status[15];        // ACTIVE or BLOCKED
     
 };
 

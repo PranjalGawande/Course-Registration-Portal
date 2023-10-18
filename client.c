@@ -629,19 +629,19 @@ void block_student(int sockfd, int option)
 
     if (msg == 0)
     {
-        printf("Student is already BLOCKED\n");
+        printf("\nStudent is already BLOCKED\n");
     }
     else if (msg == 1 && result == true)
     {
-        printf("Succesfully blocked the student\n");
+        printf("\nSuccesfully blocked the student\n");
     }
     else if (msg = 2)
     {
-        printf("Student record not found!!\n");
+        printf("\nStudent record not found!!\n");
     }
     else if (result == false)
     {
-        printf("Error in blocking the student\n");
+        printf("\nError in blocking the student\n");
     }
 
     show_menu(sockfd);
@@ -782,7 +782,7 @@ void view_courses (int sockfd, int option) {
 
 void add_course(int sockfd, int option) {
     send (sockfd, &option, sizeof(option), 0);
-    printf ("\noption: %d\n", option);
+    // printf ("\noption: %d\n", option);
     struct course record;
     bool result;
 
@@ -817,8 +817,8 @@ void add_course(int sockfd, int option) {
     // scanf("%[^\n]", record.course_code);
 
     // strcpy(record.courseid, "");
-    printf ("course id: %d\n", record.id);
-	printf ("course faculty id: %d\n", record.faculty_id);
+    // printf ("course id: %d\n", record.id);
+	// printf ("course faculty id: %d\n", record.faculty_id);
 
     send (sockfd, &record, sizeof(struct course), 0);
 
@@ -834,7 +834,7 @@ void add_course(int sockfd, int option) {
     if (result == true) {
         printf ("\nNew Course Added Successfully\n\n");
         printf ("Course Id generated: %d\n\n", id);
-        printf ("Node: Course code will be {course_code(first 2 letter)}{course_id}\n");
+        // printf ("Node: Course code will be {course_code(first 2 letter)}{course_id}\n");
     }
     else {
         printf ("Error in adding course\n");
